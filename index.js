@@ -7,6 +7,7 @@ const config = {
   token: process.env.TOKEN,
   channel: process.env.CHANNEL_ID,
   staff: process.env.STAFF_ROLE_ID,
+  logChannel: process.env.LOG_CHANNEL_ID,
   // Kategori ID'leri
   userReportCategory: process.env.USER_REPORT_CATEGORY_ID,
   purchaseCategory: process.env.PURCHASE_CATEGORY_ID,
@@ -263,10 +264,10 @@ client.on("interactionCreate", async(interaction) => {
             id: interaction.user.id,
             allow: [PermissionsBitField.Flags.ViewChannel]
           },
-          {
+          ...(config.staff ? [{
             id: config.staff,
             allow: [PermissionsBitField.Flags.ViewChannel]
-          },
+          }] : []),
         ]
       };
       
@@ -303,6 +304,7 @@ client.on("interactionCreate", async(interaction) => {
       )
       
       db.set(`kapat_${channel.id}`, interaction.user.id)
+      db.set(`acan_${channel.id}`, { id: interaction.user.id, tag: interaction.user.tag, sebep: interaction.customId, acilis: Date.now() })
       db.add(`ticket_${interaction.guild.id}`, 1)
       
       const message = await channel.send({embeds: [embed], components: [row]})
@@ -320,12 +322,58 @@ client.on("interactionCreate", async(interaction) => {
       
       await interaction.reply({embeds: [embed]})
       
+      // Log kanalına gönderilecek transcript dosyasını hazırla
+      try {
+        if (config.logChannel) {
+          const fs = require("fs")
+          const ticketInfo = db.get(`acan_${channel.id}`)
+          const mesajlar = db.fetch(`mesaj_${channel.id}`)
+          
+          const baslik = [
+            `Ticket Kanalı: ${channel.name}`,
+            `Açan Kullanıcı: ${ticketInfo ? ticketInfo.tag : "Bilinmiyor"} (${ticketInfo ? ticketInfo.id : "?"})`,
+            `Sebep: ${ticketInfo ? ticketInfo.sebep : "Bilinmiyor"}`,
+            `Açılış: ${ticketInfo ? new Date(ticketInfo.acilis).toLocaleString("tr-TR") : "Bilinmiyor"}`,
+            `Kapatan: ${interaction.user.tag} (${interaction.user.id})`,
+            `Kapanış: ${new Date().toLocaleString("tr-TR")}`,
+            "----------------------------------------",
+            ""
+          ].join("\n")
+          
+          const icerik = baslik + (mesajlar && mesajlar.length > 0 ? mesajlar.join("\n") : "Bu kanalda hiç mesaj bulunamadı.")
+          
+          const dosyaYolu = `/tmp/${channel.id}-transcript.txt`
+          fs.writeFileSync(dosyaYolu, icerik)
+          
+          const logKanali = await client.channels.fetch(config.logChannel).catch(() => null)
+          if (logKanali) {
+            const logEmbed = new EmbedBuilder()
+            .setColor(0x127896)
+            .setAuthor({ name: "Nova | Ticket Kapatıldı", iconURL: interaction.guild.iconURL({ dynamic: true }) })
+            .addFields(
+              { name: "Kanal", value: `${channel.name}`, inline: true },
+              { name: "Açan", value: ticketInfo ? `${ticketInfo.tag}` : "Bilinmiyor", inline: true },
+              { name: "Kapatan", value: `${interaction.user.tag}`, inline: true },
+            )
+            
+            await logKanali.send({ embeds: [logEmbed], files: [dosyaYolu] })
+          } else {
+            console.log("Log kanalı bulunamadı! LOG_CHANNEL_ID'yi kontrol edin.")
+          }
+          
+          fs.unlink(dosyaYolu, () => {})
+        }
+      } catch (error) {
+        console.error("Transcript gönderilirken hata oluştu:", error)
+      }
+      
       // 5 saniye bekleyip kanalı sil
       setTimeout(async () => {
         try {
           // Mesaj geçmişini temizle (veritabanından)
           db.delete(`mesaj_${channel.id}`)
           db.delete(`kapat_${channel.id}`)
+          db.delete(`acan_${channel.id}`)
           
           // Kanalı sil
           await channel.delete("Destek talebi kapatıldı")
@@ -338,6 +386,13 @@ client.on("interactionCreate", async(interaction) => {
     
   } catch (error) {
     console.error("Interaction hatası:", error)
+    try {
+      if (interaction.deferred || interaction.replied) {
+        await interaction.followUp({ content: '⚠️ Bir hata oluştu, lütfen daha sonra tekrar deneyin veya bir yöneticiye bildirin.', ephemeral: true }).catch(() => {})
+      } else {
+        await interaction.reply({ content: '⚠️ Bir hata oluştu, lütfen daha sonra tekrar deneyin veya bir yöneticiye bildirin.', ephemeral: true }).catch(() => {})
+      }
+    } catch (e) {}
   }
 })
 
