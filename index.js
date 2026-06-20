@@ -278,7 +278,7 @@ client.on("interactionCreate", async(interaction) => {
       const channel = await interaction.guild.channels.create(channelOptions)
       
       const embed = new EmbedBuilder()
-      .setAuthor({name: "Revolt - Destek Sistemi!", iconURL: interaction.guild.iconURL()})
+      .setAuthor({name: "Nova - Destek Sistemi!", iconURL: interaction.guild.iconURL()})
       .setDescription("Hey, destek talebi açtığına göre önemli bir konu olmalı. Bu sürede birini etiketleme ve sakince sorununu belirt.")
       .addFields(
         { name: '\u200B', value: '\u200B' },
