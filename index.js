@@ -123,7 +123,7 @@ client.on("ready", async() => {
        { name: "⭐ Diğer ", value: "Diğer Sebepler İçin.", inline: true },
    )
    .setThumbnail("https://cdn.discordapp.com/attachments/1016663875342569562/1045979609965015080/ravenDestek.png")
-   .setFooter({ text: "discord.gg/revoltjb", iconURL: "https://cdn.discordapp.com/attachments/1016663875342569562/1045979609965015080/ravenDestek.png" })
+   .setFooter({ text: "discord.gg/novacstr", iconURL: "https://cdn.discordapp.com/attachments/1402584489095331871/1517963565179338984/raf360x360075tfafafaca443f4786.png?ex=6a38313c&is=6a36dfbc&hm=500a14516f687afbcb60ea1c2734445306f14aca051a6c4c5e9edd34f489bdd6&" })
 
   const row = new Discord.ActionRowBuilder()
   .addComponents(
@@ -182,7 +182,7 @@ client.on("interactionCreate", async(interaction) => {
              { name: "⭐ Diğer ", value: "Diğer Sebepler İçin.", inline: true },
          )
          .setThumbnail("https://cdn.discordapp.com/attachments/1016663875342569562/1045979609965015080/ravenDestek.png")
-         .setFooter({ text: "discord.gg/revoltjb", iconURL: "https://cdn.discordapp.com/attachments/1016663875342569562/1045979609965015080/ravenDestek.png" })
+         .setFooter({ text: "discord.gg/novacstr", iconURL: "https://cdn.discordapp.com/attachments/1402584489095331871/1517963565179338984/raf360x360075tfafafaca443f4786.png?ex=6a38313c&is=6a36dfbc&hm=500a14516f687afbcb60ea1c2734445306f14aca051a6c4c5e9edd34f489bdd6&" })
 
         const row = new Discord.ActionRowBuilder()
         .addComponents(
