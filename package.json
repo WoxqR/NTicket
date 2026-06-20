@@ -1,0 +1,14 @@
+{
+  "name": "revolt-ticket-bot",
+  "version": "1.0.0",
+  "description": "Discord destek (ticket) sistemi botu",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "croxydb": "^0.0.26",
+    "express": "^4.19.2"
+  }
+}
