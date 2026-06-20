@@ -1,5 +1,5 @@
 {
-  "name": "revolt-ticket-bot",
+  "name": "nova-ticket-bot",
   "version": "1.0.0",
   "description": "Discord destek (ticket) sistemi botu",
   "main": "index.js",
