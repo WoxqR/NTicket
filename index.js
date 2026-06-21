@@ -124,7 +124,7 @@ client.on("ready", async() => {
        { name: "⭐ Diğer ", value: "Diğer Sebepler İçin.", inline: true },
    )
    .setThumbnail(as.guild.iconURL({ dynamic: true, size: 256 }))
-   .setFooter({ text: "discord.gg/novajb", iconURL: as.guild.iconURL({ dynamic: true }) })
+   .setFooter({ text: "discord.gg/novacstr", iconURL: as.guild.iconURL({ dynamic: true }) })
 
   const row = new Discord.ActionRowBuilder()
   .addComponents(
